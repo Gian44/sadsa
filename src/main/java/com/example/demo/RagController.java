@@ -35,9 +35,9 @@ public class RagController {
                 .collect(Collectors.joining(System.lineSeparator()));
         var systemPromptTemplate = new SystemPromptTemplate(
                 """
-                            Use the following pieces of context to answer the question at the end.
-                            If you don't know the answer, just say that you don't know, don't try to make up an answer.
-                            Give a detailed answer in upto 5 sentences.
+                            You are a helpful assistant.
+                            Use only the following information to answer the question.
+                            Do not use any other information. If you don't know, say you don't know.
 
                             {information}
                         """);
