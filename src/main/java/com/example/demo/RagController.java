@@ -9,6 +9,7 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,10 +30,15 @@ public class RagController {
     @SuppressWarnings("removal")
     @GetMapping("/rag")
     public ResponseEntity<String> generateAnswer(@RequestParam String query) {
+
+        System.out.println("Query: " + query);
+        //SearchRequest q = query(query).withSimilarityThreshold(0.5).withTopK(3);
         List<Document> similarDocuments = vectorStore.similaritySearch(query);
+        System.out.println();
         String information = similarDocuments.stream()
                 .map(Document::getContent)
                 .collect(Collectors.joining(System.lineSeparator()));
+
         var systemPromptTemplate = new SystemPromptTemplate(
                 """
                             You are a helpful assistant.
@@ -42,9 +48,20 @@ public class RagController {
                             {information}
                         """);
         var systemMessage = systemPromptTemplate.createMessage(Map.of("information", information));
+        
+        System.out.println("System message created: " + systemMessage.getContent());
+
         var userPromptTemplate = new PromptTemplate("{query}");
         var userMessage = userPromptTemplate.createMessage(Map.of("query", query));
+
         var prompt = new Prompt(List.of(systemMessage, userMessage));
-        return ResponseEntity.ok(aiClient.call(prompt).getResult().getOutput().getContent());
+        var response = aiClient.call(prompt).getResult().getOutput().getContent();
+
+        String outputString = String.format(
+            "Query: %s%nInformation: %s%n%nAI response: %s",
+            query, information, response
+        );
+
+        return ResponseEntity.ok(outputString);
     }
 }

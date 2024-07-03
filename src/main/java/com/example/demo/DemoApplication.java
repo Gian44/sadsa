@@ -22,5 +22,6 @@ class AppConfig {
 	@Bean
 	VectorStore vectorStore(EmbeddingModel embedding) {
 		return new SimpleVectorStore(embedding);
-	}
+	} 
 }
+	 	

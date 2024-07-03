@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example;
 
 import org.springframework.ai.reader.ExtractedTextFormatter;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
@@ -46,7 +46,7 @@ public class PdfFileReader {
                                 .build())
                 .build();
 
-        var textSplitter = new TokenTextSplitter();
+        var textSplitter = new TokenTextSplitter(1000, 150, 150, 50, false);
 
         for (Resource pdfResource : pdfResources) {
             logger.info("Processing PDF resource: " + pdfResource.getFilename());
